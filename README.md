@@ -1,9 +1,9 @@
 # Terrestrial-and-marine-ecospace-through-the-ETE
 Datasets and code for the manuscript "Contrasting terrestrial and marine ecospace dynamics after the end-Triassic mass extinction event" by Alison T. Cribb(1*+), Kiersten K. Formoso(1+), C. Henric Woolley(1,2), James Beech (1), Shannon Brophy(1), Paul Byrne (1,2), Victoria C. Cassady(1), Amanda L. Godbold(1), Ekaterina Larina (1,3), Peter Maxeiner (1), Yun-Hsin Wu (2), Frank A. Corsetti(1), and David J. Bottjer (1)
 
-1: Department of Earth Sciences, University of Southern California, Los Angeles, California, USa
-2: The Dinosaur Institute, Natural History Museum of Los Angeles County, Los Angeles, California, USA
-3: Department of Geological Sciences, Jackson School of Geosciences, University of Texas at Austin, Austin, Texas, USA
+*1: Department of Earth Sciences, University of Southern California, Los Angeles, California, USA
+*2: The Dinosaur Institute, Natural History Museum of Los Angeles County, Los Angeles, California, USA
+*3: Department of Geological Sciences, Jackson School of Geosciences, University of Texas at Austin, Austin, Texas, USA
 
 The purpose of these analyses is to reconstruct comparative trends in marine and terrestrial functional ecology across the end-Triassic mass extinction event. The analyses scripts utilize the datasets compiled by the manuscript's authors, which assign ecospace functional groups to data from the PaleoDB. The code in this github repository will produce all of the outputs necessary to recreate the figures in the manuscript's main text. Analyses for the suppleentary material are not explicitly given here, but they can be easily reconstructed from the output files. The repository contains four directories: <b> 1) Datasets </b> - .RData files for the PlaeoDB data with ecospace assignments, which is used in every analysis scripts, and .csv files for the colors used in the relative abundance figures. <b> Functions - </b> R script of useful functions to calculate richness, with various subsampling protocols. <b> Analyses </b> - Scripts to reconstruct analyses presented in the mansucript. <b> Figures </b> - Scripts to reproduce Figures 2-5 in the main text of the manuscript.
 
