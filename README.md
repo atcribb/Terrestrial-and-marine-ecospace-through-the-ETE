@@ -26,6 +26,14 @@ Additionally, there are two .csv files that contain the colours assigned to each
 
 
 # Functions
+One script contains several uesful functions for reconstructing subsampled generic and functional richness:
+* TJ_functions.R
+The analyses presented in the manuscript specificially use the subcollections.funcrich() and subcollections.genrich() functions for subsampling, and a hand calc.qunatiles() functional to calculate the final mean values and confidence intervals. 
+
+There are a number of other handy functions in this script which are not used in the final version of the manuscript. These include subsampling protocols for subsampling by stage (rather than by collection) and subsampling protocols for within-Functional Group dynamics.
+
+This script of functions is used throughout the  <b>Analyses</b> scripts, so be sure to have it loaded into your environment before attempting to run the Analyses scripts where they are utilized.
+
 
 # Analyses
 
