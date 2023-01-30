@@ -15,10 +15,10 @@ Datasets are provided as .RData files for faster loading times, but the correspo
 
 *The R scripts in this repository were created by A.T.C. Please contact Alison Cribb (cribb@usc.edu) for any questions or if you plan to use and edit these scripts in any way.
 
-#Datasets
+# Datasets
 
-#Functions
+# Functions
 
-#Analyses
+# Analyses
 
-#Plotting_outputs 
+# Plotting_outputs 
