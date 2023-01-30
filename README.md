@@ -21,8 +21,8 @@ There are two .RData files in <b>Datasets</b> that contain the PaleoDB data with
 * TJ_terrestrial_ecospacedata.RData
 
 Additionally, there are two .csv files that contain the colours assigned to each functional group that recreate the relative abundance Figures 3-4. These are optional, as you can always choose your own colours or use R's default -- but they are very useful for getting a cleaner figure.
-*tj_relabund_marinecols.csv
-*tj_relabund_terrestrialcols.csv
+* tj_relabund_marinecols.csv
+* tj_relabund_terrestrialcols.csv
 
 
 # Functions
