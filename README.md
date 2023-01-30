@@ -36,5 +36,37 @@ This script of functions is used throughout the  <b>Analyses</b> scripts, so be 
 
 
 # Analyses
+The following pakcages are required to run the **Analyses** scripts:
+* divDyn
+* vegan
 
-# Plotting_outputs 
+There are eight analyses scripts:
+* Figure2A_Marine_Richness.R
+* Figure2B_Terrestrial_Richness.R
+* Figure3_Marine_FGRelativeAbundance.R
+* Figure3_Terrestrial_FGRelattiveAbundance.R
+* Figure5A_Marine_withinFGextinction.R
+* Figure5B_Terrestrial_withinFGextinction.R
+* Figure6A_Marine_BrayCurtis.R
+* Figure6B_Terrestrial_BrayCurtis.R
+
+Each script is named for the figure in the manuscript that the analyses corresponds to, the dataset used (marine or terrestrial), and a brief description of the analysis.
+
+Each script will produce an output .RData file in an /Output folder in your working directory. These will be used in the <b>Plotting_output</b> scripts, so do not rename them unless you also edit the **Plotting_output** scripts accordingly.
+
+
+# Plotting_output 
+The following packages are required to run the **Plotting_output** scripts:
+* deeptime
+* ggplot2
+* egg
+
+The following scripts will produce the results presented in the manuscript:
+* Figure2_Plot_Richness.R - This script will produce four figure: 1) Marine generic richness, 2) Marine fucntional richness, 3) Terrestrial functional richness, 4) Terrestrial generic richness. Note that the final figure combines generic and functional richness into one plot to save space, but it is a bit easier to visualize the data in R when these results are all plotted seperately. Output data is from **Analyses** scripts Figure2A_Marine_Richness.R and **Analyses** scripts Figure 2B_Terrestrial_Richness.R
+* Figure3_Plot_Marine_FGRelativeAbundance.R - This script will produce the functional group relative abundance figures in Figure 3. Output data utilized is ultimately the mean results from the subsampling protocol, as it is difficult to visualize this data with error bars. Use tj_relabund_marinecols.csv from **Datasets** for helful colour assignments to the marine functional groups.
+* Figure4_Plot_Terrestrial_FGRelativeAbundance.R - Same thing as above, but for terrestrial. Use the tj_relabunud_terrestrialcols.csv from **Datasets**.
+* Figure5_withinFGext.R - This script will plot the exinction severity in Figure 5. Output from the marine is from Figure5A_Marine_withinFGextinction.R and Figure 5B_Terrestrial_withinFGextinction.R
+* Figure6_BrayCurtis.R - This script will plot the Bray-Curtis dissimilarity indices calculated in the **Analyses** scripts FigureGA_Marine_BrayCurtis.R and Figure6B_Terrestrial_BrayCurtis.R. 
+
+Note that these figures will not be perfect replicas of the final figures in the manuscript. These scripts will ultimately give you more results than the manuscript covers -- for example, more sequential points are plotted for the Bray-Curtis figures (Figure 6) in the scripts than in the final manuscript figure, and the terrestrial results may contain raw Carnian and Aalenian data, which are not presented in the final manuscript due to lack of ability to subsample. Figures have also been slightly edited in illustrator for aesthetic purposes and improved clarity. 
+
