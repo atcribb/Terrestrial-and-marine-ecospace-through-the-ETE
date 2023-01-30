@@ -1,4 +1,4 @@
-#Key functions to reconstruct TJ terrestrial and marine ecospace richness analyses 
+#Some useful functions to reconstruct TJ terrestrial and marine ecospace richness analyses 
 
 #====== RICHNESS FUNCTIONS ======#
 
