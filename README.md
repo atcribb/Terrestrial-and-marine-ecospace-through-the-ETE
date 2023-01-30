@@ -16,6 +16,14 @@ Datasets are provided as .RData files for faster loading times, but the correspo
 *The R scripts in this repository were created by A.T.C. Please contact Alison Cribb (cribb@usc.edu) for any questions or if you plan to use and edit these scripts in any way.
 
 # Datasets
+There are two .RData files in <b>Datasets</b> that contain the PaleoDB data with ecospace assignments to each taxonomic occurrence:
+* TJ_marine_ecospacedata.RData 
+* TJ_terrestrial_ecospacedata.RData
+
+Additionally, there are two .csv files that contain the colours assigned to each functional group that recreate the relative abundance Figures 3-4. These are optional, as you can always choose your own colours or use R's default -- but they are very useful for getting a cleaner figure.
+*tj_relabund_marinecols.csv
+*tj_relabund_terrestrialcols.csv
+
 
 # Functions
 
