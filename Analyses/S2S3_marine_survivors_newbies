@@ -1,5 +1,5 @@
 #Summary: Distribution of number of genera in each functional group, per stage
-#Author: Dr. Alison T. Cribb
+#Author: Alison Cribb
 
 #=== packages and functions ===#
 library(divDyn)
@@ -90,4 +90,4 @@ for(i in 1:length(TJ_stages)){
 
 #==== save data ====#
 marine_output_df <- output_df
-save(output_df, 'marine_survivorsnewbies.RData')
+save(output_df, 'Output/marine_survivorsnewbies.RData')
