@@ -1,5 +1,5 @@
 #Calculates % of genera that are new and % that go extinct between each stage
-#Author: Alison T. Cribb 
+#Author: Alison Cribb 
 
 #=== notes ===#
 #To calculate generic extinction %:
@@ -112,7 +112,7 @@ for(i in 1:(length(TJ_stages)-1)){ #
 }
 
 turnover_out_next
-#save(turnover_out_next, file='terrestrial_extinctionperstage_sequential.RData') 
+#save(turnover_out_next, file='Output/terrestrial_extinctionperstage_sequential.RData') 
 
 library(deeptime)
 library(ggplot2)
