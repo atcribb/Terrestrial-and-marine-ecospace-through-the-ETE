@@ -16,7 +16,7 @@ setwd("~/Desktop/Manucripts/Ecospace")
 library(divDyn)
 data(stages)
 
-#break into triassic and jurassic
+#input stages
 TJ_stages <- stages$stage[57:62]
 TJ_stages
 TJ_mids <- stages$mid[57:62]
