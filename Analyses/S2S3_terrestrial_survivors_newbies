@@ -1,16 +1,17 @@
 #Summary: Distribution of number of genera in each functional group, per stage
 #Author: Alison Cribb
 
-#=== packages and functions ===#
+#==== packages ====#
 library(divDyn)
 data(stages)
-library(tidyr)
 
-#also load TJ_functions.R script for functions
+TJ_stages <- stages$stage[57:62]
+TJ_stages
+Jurassic_stages <- stages$stage[59:62]
+Jurassic_stages
 
 #==== data input ====#
 load('Datasets/TJ_terrestrial_fulldata_final.RData')
-TJ_data <- final_terrestrial_rawdat
 jurassic_data <- subset(final_terrestrial_rawdat, stage %in% Jurassic_stages)
 Rhaetian_data <- subset(final_terrestrial_rawdat, stage=='Rhaetian')
 
@@ -32,7 +33,7 @@ colnames(results_df) <- variables
 results_df$stage <- Jurassic_stages
 
 #subsampling parameteres 
-n.colls <- 400
+n.colls <- 35
 iter <- 1000
 
 #=== analysis ===#
@@ -97,9 +98,8 @@ prop_data <- subset(final_terrestrial_rawdat, stage %in% stages$stage[58:62])
 prop_stages <- stages$stage[58:62]
 
 #subsampling parameters
-n.colls <- 400
+n.colls <- 35
 iter<- 1000
-
 
 for(i in 1:length(Jurassic_stages)){
   
@@ -183,8 +183,8 @@ for(i in 1:length(Jurassic_stages)){
   
 }
 
-View(output_df)
-
 #=== save ===#
 terrestrial_output_df <- output_df
-save(terrestrial_output_df, 'Output/terrestrial_survivors_newbies.RData')
+save(terrestrial_output_df, file='Output/terrestrial_survivorsvsnewbies.RData)
+
+
