@@ -9,8 +9,8 @@ TJ_stages <- stages$stage[56:63]
 TJ_mids <- stages$mid[56:63]
 
 #==== data input - marine ====#
-load('TJ_marine_fulldata_final.RData')
-TJ_data <- final_marine_rawdat 
+load('Datasets/TJ_marine_ecospacedata.RData')
+TJ_data <- final_marine_rawdat
 
 #===== generic abundance =====#
 #for each stage, show # of occurrences per genera
