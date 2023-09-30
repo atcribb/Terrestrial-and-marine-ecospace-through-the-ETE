@@ -21,7 +21,7 @@ TJ_stages <- stages$stage[57:62]
 TJ_stages
 TJ_mids <- stages$mid[57:62]
 
-#==== data input - marine ====#
+#==== data input - terrestrial ====#
 load('Datasets/TJ_terrestrial_ecospacedata.RData')
 TJ_data <- final_terrestrial_rawdat
 
