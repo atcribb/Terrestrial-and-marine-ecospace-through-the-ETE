@@ -1,0 +1,90 @@
+#Summary: Distribution of number of genera in each functional group, per stage
+#Author: Dr. Alison T. Cribb
+
+#=== packages and functions ===#
+library(ggplot2)
+library(divDyn)
+data(stages)
+library(tidyr)
+
+#also load TJ_functions.R script for functions
+
+#=== data unput ===#
+load('TJ_marine_fulldata_final.RData')
+TJ_data <- final_marine_rawdat 
+
+#=== data set up ===#
+FG_list <- sort(unique(final_marine_rawdat$FG_Number))
+FG_list
+
+#create output_df by rbinding new dataframes for each stage
+    #final output_df columns: stage, functional group, occs, rich
+
+output_df <- as.data.frame(matrix(data=NA, nrow=1, ncol=4))
+colnames(output_df) <- c('stage', 'fg_number', 'occs', 'richness')
+output_df
+
+#iterations and collections quota for subsampling
+coll.quota=400
+iter=1000
+
+for(i in 1:length(TJ_stages)){
+  
+  #subset data for this stage 
+  this.stage <- TJ_stages[i]
+  this.stage.data <- subset(final_marine_rawdat, final_marine_rawdat$stage==this.stage)
+  
+  #create temp dataframe
+  this.output_df <- as.data.frame(matrix(data=NA, nrow=length(FG_list), ncol=4))
+  colnames(this.output_df) <- colnames(output_df)
+  this.output_df$stage <- this.stage
+  
+  #collections data for subsampling
+  these.n.colls <- length(unique(this.stage.data$collection_no))
+  these.colls <- unique(this.stage.data$collection_no)
+  
+  
+  for(k in 1:length(FG_list)){
+    
+    this.fg_number <- FG_list[k]
+    this.stage.fg.data <- subset(this.stage.data, this.stage.data$FG_Number==this.fg_number)
+    
+      #blank vectors to save and average at the end
+      rich.n <- rep(NA, iter)
+      occs.n <- rep(NA, iter)
+      
+      #subsampling
+      for(j in 1:iter){
+        
+          these.subbed.colls <- sample(these.colls, coll.quota, replace=TRUE)
+          subbed.data <- subset(this.stage.fg.data, this.stage.fg.data$collection_no %in% these.subbed.colls)
+          
+          #number of genera
+          this.occs <- length(subbed.data$genus)
+          occs.n[j] <- this.occs
+        
+          #generic richness
+          this.rich <- length(unique(subbed.data$genus))
+          rich.n[j] <- this.rich
+        
+      }
+      
+      #take averages of rich.n and occs.n
+      avg.occs <- mean(occs.n)
+      avg.rich <- mean(rich.n)
+      
+      #save in this.output_df
+      this.output_df$fg_number[k] <- this.fg_number
+      this.output_df$occs[k] <- avg.occs
+      this.output_df$richness[k] <- avg.rich
+      
+  }
+  
+  #rbind output dataframes together
+  output_df <- rbind(output_df, this.output_df)
+  
+  print(paste('FINISHED:', this.stage))
+  
+}
+
+save('marine_survivorsnewbies.RData')
