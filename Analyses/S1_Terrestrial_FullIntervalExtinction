@@ -1,0 +1,132 @@
+#Calculates % of genera that are new and % that go extinct between each stage
+#Author: Alison T. Cribb 
+
+#=== notes ===#
+#To calculate generic extinction %:
+#We want to count the number of genera that go extinct in each functional group,
+#divided by the total number of genera in the functional group
+#Ex. for functional group XYZ, there are 50 genera in the Rhaetian
+#There are only 11 of those genera in the post-extinction stages 
+#Therefor, the extinction % for FGXYZ is 41/50=82% 
+#actual equation: extinction%=((pre-survivors)/pre)*100
+
+setwd("~/Desktop/Manucripts/Ecospace")
+#==========================#
+#==== packages ====#
+library(divDyn)
+data(stages)
+
+#break into triassic and jurassic
+TJ_stages <- stages$stage[57:62]
+TJ_stages
+TJ_mids <- stages$mid[57:62]
+
+#==== data input - marine ====#
+load('Datasets/TJ_terrestrial_ecospacedata.RData')
+TJ_data <- final_terrestrial_rawdat
+
+#==== set up to save data output ===#
+variables <- c('period', 'stage', 'mid_ma', 'p_ext', 'p_ext_sd')
+turnover_out_next <- as.data.frame(matrix(NA, nrow=length(TJ_stages), ncol=length(variables)))
+colnames(turnover_out_next) <- variables
+
+#subsampling variables
+iter <- 1000
+colls.n <- 400
+
+#==== Analysis - extinction  % ====#
+for(i in 1:(length(TJ_stages)-1)){ #
+  
+    this.stage <- TJ_stages[i]
+    turnover_out_next$stage[i] <- this.stage
+    turnover_out_next$mid_ma[i] <- TJ_mids[i]
+    future.stages <- TJ_stages[i+1] #change to TJ_stages[i+1:length(TJ_stages)] if doing this to semi-account for lazarus taxa, but note extinct severity will be artifically elevated as you get closer to the Aalenian
+
+    p_ext_temp <- rep(NA, iter) 
+    
+    for(j in 1:iter){
+      
+      #first normalize all of the stages to the 400 collections quota
+      raw.Norian.data <- subset(TJ_data, stage=='Norian',)
+      Norian.colls <- unique(raw.Norian.data$collection_no)
+      subbed.Norian.colls <- sample(Norian.colls, colls.n, replace=TRUE)
+      subbed.Norian.data <- subset(raw.Norian.data, collection_no %in% subbed.Norian.colls)
+      
+      raw.Rhae.data <- subset(TJ_data, stage=='Rhaetian',)
+      Rhae.colls <- unique(raw.Rhae.data$collection_no)
+      subbed.Rhae.colls <- sample(Rhae.colls, colls.n, replace=TRUE)
+      subbed.Rhae.data <- subset(raw.Rhae.data, collection_no %in% subbed.Rhae.colls)
+      
+      raw.Hett.data <- subset(TJ_data, stage=='Hettangian',)
+      Hett.colls <- unique(raw.Hett.data$collection_no)
+      subbed.Hett.colls <- sample(Hett.colls, colls.n, replace=TRUE)
+      subbed.Hett.data <- subset(raw.Hett.data, collection_no %in% subbed.Hett.colls)
+      
+      raw.Sine.data <- subset(TJ_data, stage=='Sinemurian')
+      Sine.colls <- unique(raw.Sine.data$collection_no)
+      subbed.Sine.colls <- sample(Sine.colls, colls.n, replace=TRUE)
+      subbed.Sine.data <- subset(raw.Sine.data, collection_no %in% subbed.Sine.colls)
+      
+      raw.Pliens.data <- subset(TJ_data, stage=='Pliensbachian')
+      Pliens.colls <- unique(raw.Pliens.data$collection_no)
+      subbed.Pliens.colls <- sample(Pliens.colls, colls.n, replace=TRUE)
+      subbed.Pliens.data <- subset(raw.Pliens.data, collection_no %in% subbed.Pliens.colls)
+      
+      raw.Toa.data <- subset(TJ_data, stage=='Toarcian')
+      Toa.colls <- unique(raw.Toa.data$collection_no)
+      subbed.Toa.colls <- sample(Toa.colls, colls.n, replace=TRUE)
+      subbed.Toa.data <- subset(raw.Toa.data, collection_no %in% subbed.Toa.colls)
+
+      #combine data into one big subsetted dataframe 
+      subbed.TJ_data <- rbind(subbed.Carn.data, 
+                              subbed.Norian.data,
+                              subbed.Rhae.data,
+                              subbed.Hett.data,
+                              subbed.Sine.data,
+                              subbed.Pliens.data,
+                              subbed.Toa.data,
+                              subbed.Aal.data)
+      
+      #now that data is subsampled, we can get datasets for this stage and the future stages
+      subbed.this.stage.data <- subset(subbed.TJ_data, stage==this.stage)
+      subbed.future.stage.data <- subset(subbed.TJ_data, stage %in% future.stages)
+      
+      #genera lists for this stage and future stages 
+      this.stage.gen <- unique(subbed.this.stage.data$genus) #genera in this stage
+      this.stage.gen.count <- length(this.stage.gen)
+      future.stage.gen <- unique(subbed.future.stage.data$genus) #genera in future stages
+      surviving.gen.data <- subset(subbed.future.stage.data, genus %in% this.stage.gen)
+      surviving.gen <- unique(surviving.gen.data$genus)
+      
+      #calculate proportion of genera that go extinct
+      p_ext <- ((this.stage.gen.count - length(surviving.gen))/this.stage.gen.count)*100 #see notes
+      #save extinction % in temp
+      p_ext_temp[j] <- p_ext
+      
+  
+    }
+    
+    turnover_out_next$p_ext[i] <- mean(p_ext_temp, na.rm=TRUE)
+    turnover_out_next$p_ext_sd[i] <- sd(p_ext_temp, na.rm=TRUE)
+
+}
+
+turnover_out_next
+#save(turnover_out_next, file='terrestrial_extinctionperstage_sequential.RData') 
+
+library(deeptime)
+library(ggplot2)
+
+terrestrial_extinction_sequential <- ggplot(data=turnover_out_next) +
+  geom_line(aes(x=mid_ma, y=p_ext), linetype='dashed') +
+  geom_point(aes(x=mid_ma, y=p_ext), size=3) +
+  geom_errorbar(aes(x=mid_ma, ymin=p_ext-p_ext_sd, ymax=p_ext+p_ext_sd), width=0.5) +
+  scale_x_reverse() +
+  scale_y_continuous(limits=c(0,100)) +
+  ylab('percentage of genera that do not appear in next stage') +
+  coord_geo(pos=list('bottom'), 
+            dat=list('stages'), 
+            size=list('auto'),
+            expand=TRUE) +
+  theme_classic()
+terrestrial_extinction_sequential
