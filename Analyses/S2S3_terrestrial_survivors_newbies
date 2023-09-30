@@ -187,4 +187,4 @@ View(output_df)
 
 #=== save ===#
 terrestrial_output_df <- output_df
-save(terrestrial_output_df, 'terrestrial_survivors_newbies.RData')
+save(terrestrial_output_df, 'Output/terrestrial_survivors_newbies.RData')
