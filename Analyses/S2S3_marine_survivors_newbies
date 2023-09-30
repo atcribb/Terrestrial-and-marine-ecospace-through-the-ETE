@@ -11,7 +11,7 @@ Jurassic_stages <- stages$stage[59:63]
 Jurassic_stages
 
 #==== data input ====#
-load('Datasets/FINAL_DATASETS/TJ_marine_fulldata_final.RData')
+load('Datasets/TJ_marine_fulldata_final.RData')
 jurassic_data <- subset(final_marine_rawdat, stage %in% Jurassic_stages)
 Rhaetian_data <- subset(final_marine_rawdat, stage=='Rhaetian')
 
