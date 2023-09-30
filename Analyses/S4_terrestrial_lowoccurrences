@@ -1,0 +1,133 @@
+#Summary: From the raw data, counts the number of genera that are represented by A) only 1 occurrence or B) 5 or fewer occurences, per stage
+#Author: Alison Cribb
+
+#==== packages ====#
+library(divDyn)
+data(stages)
+
+TJ_stages <- stages$stage[57:62]
+TJ_mids <- stages$mid[57:62]
+
+#==== data input - marine ====#
+load('Datasets/TJ_terrestrial_ecospacedata.RData')
+TJ_data <- final_terrestrial_rawdat
+ 
+#===== generic abundance =====#
+#for each stage, show # of occurrences per genera
+generic_abundance <- function(stage_abundance, stage_data){
+  
+  for(i in 1:nrow(stage_abundance)){
+    this.genus <- stage_abundance$genus[i]
+    this.genus.data <- subset(stage_data, genus==this.genus)
+    this.genus.count <- nrow(this.genus.data)
+    stage_abundance$n[i] <- this.genus.count
+  }
+  
+  return(stage_abundance)
+}
+
+variables <- c('stage', 'genus', 'n')
+
+#Norian
+Norian_data <- subset(TJ_data, stage=='Norian')
+Norian_abundance <- as.data.frame(matrix(NA, nrow=length(unique(Norian_data$genus)),                                      
+                                         ncol=length(variables)))
+colnames(Norian_abundance) <- variables
+Norian_abundance$stage <- 'Norian'
+Norian_abundance$genus <- unique(Norian_data$genus)
+Norian_abundance
+Norian_abundance <- generic_abundance(Norian_abundance, Norian_data)
+
+#Rhaetian
+Rhaetian_data <- subset(TJ_data, stage=='Rhaetian')
+Rhaetian_abundance <- as.data.frame(matrix(NA, nrow=length(unique(Rhaetian_data$genus)),                                      
+                                           ncol=length(variables)))
+colnames(Rhaetian_abundance) <- variables
+Rhaetian_abundance$stage <- 'Rhaetian'
+Rhaetian_abundance$genus <- unique(Rhaetian_data$genus)
+Rhaetian_abundance
+Rhaetian_abundance <- generic_abundance(Rhaetian_abundance, Rhaetian_data)
+
+#Hettangian
+Hettangian_data <- subset(TJ_data, stage=='Hettangian')
+Hettangian_abundance <- as.data.frame(matrix(NA, nrow=length(unique(Hettangian_data$genus)),                                      
+                                             ncol=length(variables)))
+colnames(Hettangian_abundance) <- variables
+Hettangian_abundance$stage <- 'Hettangian'
+Hettangian_abundance$genus <- unique(Hettangian_data$genus)
+Hettangian_abundance
+Hettangian_abundance <- generic_abundance(Hettangian_abundance, Hettangian_data)
+
+#Sinemurian
+Sinemurian_data <- subset(TJ_data, stage=='Sinemurian')
+Sinemurian_abundance <- as.data.frame(matrix(NA, nrow=length(unique(Sinemurian_data$genus)),                                      
+                                             ncol=length(variables)))
+colnames(Sinemurian_abundance) <- variables
+Sinemurian_abundance$stage <- 'Sinemurian'
+Sinemurian_abundance$genus <- unique(Sinemurian_data$genus)
+Sinemurian_abundance
+Sinemurian_abundance <- generic_abundance(Sinemurian_abundance, Sinemurian_data)
+
+#Pliensbachian
+Pliensbachian_data <- subset(TJ_data, stage=='Pliensbachian')
+Pliensbachian_abundance <- as.data.frame(matrix(NA, nrow=length(unique(Pliensbachian_data$genus)),                                      
+                                                ncol=length(variables)))
+colnames(Pliensbachian_abundance) <- variables
+Pliensbachian_abundance$stage <- 'Pliensbachian'
+Pliensbachian_abundance$genus <- unique(Pliensbachian_data$genus)
+Pliensbachian_abundance
+Pliensbachian_abundance <- generic_abundance(Pliensbachian_abundance, Pliensbachian_data)
+
+#Toarcian
+Toarcian_data <- subset(TJ_data, stage=='Toarcian')
+Toarcian_abundance <- as.data.frame(matrix(NA, nrow=length(unique(Toarcian_data$genus)),                                      
+                                           ncol=length(variables)))
+colnames(Toarcian_abundance) <- variables
+Toarcian_abundance$stage <- 'Toarcian'
+Toarcian_abundance$genus <- unique(Toarcian_data$genus)
+Toarcian_abundance
+Toarcian_abundance <- generic_abundance(Toarcian_abundance, Toarcian_data)
+
+
+#percentages
+p_singletons_Norian <- nrow(subset(Norian_abundance, n==1))/nrow(Norian_abundance)
+p_singletons_Rhaetian <- nrow(subset(Rhaetian_abundance, n==1))/nrow(Rhaetian_abundance)
+p_singletons_Hettangian <- nrow(subset(Hettangian_abundance, n==1))/nrow(Hettangian_abundance)
+p_singletons_Sinemurian <- nrow(subset(Sinemurian_abundance, n==1))/nrow(Sinemurian_abundance)
+p_singletons_Pliensbachian <- nrow(subset(Pliensbachian_abundance, n==1))/nrow(Pliensbachian_abundance)
+p_singletons_Toarcian <- nrow(subset(Toarcian_abundance, n==1))/nrow(Toarcian_abundance)
+
+p_low_Norian <- nrow(subset(Norian_abundance, n<6))/nrow(Norian_abundance)
+p_low_Rhaetian <- nrow(subset(Rhaetian_abundance, n<6))/nrow(Rhaetian_abundance)
+p_low_Hettangian <- nrow(subset(Hettangian_abundance, n<6))/nrow(Hettangian_abundance)
+p_low_Sinemurian <- nrow(subset(Sinemurian_abundance, n<6))/nrow(Sinemurian_abundance)
+p_low_Pliensbachian <- nrow(subset(Pliensbachian_abundance, n<6))/nrow(Pliensbachian_abundance)
+p_low_Toarcian <- nrow(subset(Toarcian_abundance, n<6))/nrow(Toarcian_abundance)
+
+
+terrestrial_low_abundances <- as.data.frame(matrix(nrow=length(TJ_stages), ncol=5))
+colnames(terrestrial_low_abundances) <- c('realm','stage', 'mid_ma', 'percent_singletons', 'percent_5')
+terrestrial_low_abundances$realm <- 'terrestrial'
+terrestrial_low_abundances$stage <- TJ_stages
+terrestrial_low_abundances$mid_ma <- TJ_mids
+terrestrial_low_abundances$percent_singletons <- c(
+                                              p_singletons_Norian,
+                                              p_singletons_Rhaetian,
+                                              p_singletons_Hettangian,
+                                              p_singletons_Sinemurian,
+                                              p_singletons_Pliensbachian,
+                                              p_singletons_Toarcian
+                                            )
+terrestrial_low_abundances$percent_5  <-         c(
+                                              p_low_Norian,
+                                              p_low_Rhaetian,
+                                              p_low_Hettangian,
+                                              p_low_Sinemurian,
+                                              p_low_Pliensbachian,
+                                              p_low_Toarcian
+                                            )
+terrestrial_low_abundances
+#save(terrestrial_low_abundances, file='terrestrial_abundances.RData')
+
+
+
