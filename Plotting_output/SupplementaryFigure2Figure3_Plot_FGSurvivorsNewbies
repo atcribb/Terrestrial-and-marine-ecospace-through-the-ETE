@@ -1,0 +1,81 @@
+#Plotting output for: distribution of number of genera in each functional group, per stage
+#Author: Alison Cribb
+
+#=== packages and functions ===#
+library(ggplot2)
+library(divDyn)
+data(stages)
+library(tidyr)
+library(RColorBrewer)
+library(egg)
+
+#=== data input ==#
+load(Output/marine_survivorsvsnewbies.RData')
+marine_output_df <- subset(marine_output_df, !(fg_number==''))
+load('Output/terrestrial_survivorsvsnewbies.RData')
+terrestrial_output_df <- subset(terrestrial_output_df, !(fg_number==''))
+
+marine_stages <- stages$stage[59:63]
+marine_output_df$stage <- factor(marine_output_df$stage, levels=marine_stages)
+terrestrial_stages <- stages$stage[59:62]
+terrestrial_output_df$stage <- factor(terrestrial_output_df$stage, levels=terrestrial_stages)
+
+#=== calculate proportions ====#
+marine_output_df$prop_new <-(marine_output_df$n_new/marine_output_df$genrich)*100
+marine_output_df$prop_Rhaetian <-(marine_output_df$n_Rhaetian/marine_output_df$genrich)*100
+marine_output_df$pop_nonRhaetian <- (marine_output_df$n_nonRhaetian/marine_output_df$genrich)*100
+
+terrestrial_output_df$prop_new <-(terrestrial_output_df$n_new/terrestrial_output_df$genrich)*100
+terrestrial_output_df$prop_Rhaetian <-(terrestrial_output_df$n_Rhaetian/terrestrial_output_df$genrich)*100
+terrestrial_output_df$pop_nonRhaetian <- (terrestrial_output_df$n_nonRhaetian/terrestrial_output_df$genrich)*100
+
+
+#==== plotting ====#
+marine_newbies <- ggplot(marine_output_df, aes(x=as.factor(stage), y=as.factor(fg_number), fill=as.numeric(prop_new), alpha=n_tot)) +
+  geom_tile() +
+  scale_fill_viridis_c(name='% New Genera', na.value='white', guide=guide_colorbar()) +
+  guides(fill=guide_colourbar(order=1), alpha=guide_legend(order=2)) +
+  xlab('stage') +
+  ylab('FG Number') +
+  labs(title='Proportion of new marine genera per functional group') +
+  theme_classic() +
+  theme(plot.title=element_text(hjust=0.5, face='bold'))
+marine_newbies
+
+terrestrial_newbies <- ggplot(terrestrial_output_df, aes(x=as.factor(stage), y=as.factor(fg_number), fill=as.numeric(prop_new), alpha=n_tot)) +
+  geom_tile() +
+  scale_fill_viridis_c(name='% New Genera', na.value='white', guide=guide_colorbar()) +
+  guides(fill=guide_colourbar(order=1), alpha=guide_legend(order=2)) +
+  xlab('stage') +
+  ylab('FG Number') +
+  labs(title='Proportion of new terrestrial genera per functional group') +
+  theme_classic() +
+  theme(plot.title=element_text(hjust=0.5, face='bold'))
+terrestrial_newbies
+
+marine_survivors <- ggplot(marine_output_df, aes(x=as.factor(stage), y=as.factor(fg_number), fill=as.numeric(prop_Rhaetian), alpha=n_tot)) +
+  geom_tile() +
+  scale_fill_viridis_c(name='% Survivor Genera', na.value='white', guide=guide_colorbar()) +
+  guides(fill=guide_colourbar(order=1), alpha=guide_legend(order=2)) +
+  xlab('stage') +
+  ylab('FG Number') +
+  labs(title='Proportion of survivor marine genera per functional group') +
+  theme_classic() +
+  theme(plot.title=element_text(hjust=0.5, face='bold'))
+marine_survivors
+
+terrestrial_survivors <- ggplot(terrestrial_output_df, aes(x=as.factor(stage), y=as.factor(fg_number), fill=as.numeric(prop_Rhaetian), alpha=n_tot)) +
+  geom_tile() +
+  scale_fill_viridis_c(name='% Survivor Genera', na.value='white', guide=guide_colorbar()) +
+  guides(fill=guide_colourbar(order=1), alpha=guide_legend(order=2)) +
+  xlab('stage') +
+  ylab('FG Number') +
+  labs(title='Proportion of survivor terrestrial genera per functional group') +
+  theme_classic() +
+  theme(plot.title=element_text(hjust=0.5, face='bold'))
+terrestrial_survivors
+
+survivors <- ggarrange(marine_survivors, terrestrial_survivors, ncol=1)
+newbies <- ggarrange(marine_newbies, terrestrial_newbies, ncol=1)
+
+
