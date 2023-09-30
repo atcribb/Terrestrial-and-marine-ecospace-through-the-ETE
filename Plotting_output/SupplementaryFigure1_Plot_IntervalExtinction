@@ -1,0 +1,35 @@
+#Plotting output for taxonomic extinction severity through the entire study interval
+
+#=== Data input ===#
+load('Output/terrestrial_abundances.RData')
+load('Output/marine_abundances.RData')
+
+#=== packages ===#
+library(deeptime)
+library(ggplot2)
+library(egg)
+
+#=== input and combine data ====#
+load('terrestrial_extinctionperstage_sequential.RData')
+terrestrial_extinction <- turnover_out_next
+terrestrial_extinction$realm <- 'terrestrial'
+load('marine_extinctionperstage_sequential.RData')
+marine_extinction <- turnover_out_next
+marine_extinction$realm <- 'marine'
+full_extinction <- rbind(terrestrial_extinction, marine_extinction)
+
+#=== plottting ===#
+extinction_perstage <- ggplot(full_extinction) +
+  geom_vline(xintercept=201.36, linetype='longdash', size=1) +
+  geom_line(aes(x=mid_ma, y=p_ext, colour=realm), linetype='dashed') +
+  geom_errorbar(aes(x=mid_ma, ymin=p_ext-p_ext_sd, ymax=p_ext+p_ext_sd), width=0.5) +
+  geom_point(aes(x=mid_ma, y=p_ext, fill=realm), shape=21, size=3) +
+  scale_color_manual(values=c('skyblue4', 'olivedrab')) +
+  scale_fill_manual(values=c('skyblue4', 'olivedrab')) +
+  scale_y_continuous(limits=c(0, 105)) +
+  ylab('Extinction severity (% genera lost in next stage)') +
+  xlab('Age (Mya)') +
+  scale_x_reverse() +
+  coord_geo(xlim=c(237, 174.7), pos='bottom', dat='stages', size='auto') +
+  theme_bw()
+extinction_perstage
