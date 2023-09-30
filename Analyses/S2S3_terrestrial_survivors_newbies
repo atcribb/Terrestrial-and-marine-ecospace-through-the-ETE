@@ -1,5 +1,5 @@
 #Summary: Distribution of number of genera in each functional group, per stage
-#Author: Dr. Alison T. Cribb
+#Author: Alison Cribb
 
 #=== packages and functions ===#
 library(divDyn)
