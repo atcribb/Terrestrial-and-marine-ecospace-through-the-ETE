@@ -1,0 +1,47 @@
+#Plotting the percentage of genera that are represented by only one or five or fewer occurrences per stage 
+
+#=== Data input ===#
+load('Output/terrestrial_abundances.RData')
+load('Output/marine_abundances.RData')
+
+#=== packages ===#
+library(deeptime)
+library(ggplot2)
+library(egg)
+
+low_abundances <- rbind(marine_low_abundances, terrestrial_low_abundances)
+low_abundances$stage <- factor(low_abundances$stage, levels=c('Carnian', 'Norian', 'Rhaetian', 'Hettangian', 'Sinemurian', 'Pliensbachian', 'Toarcian', 'Aalenian'))
+
+ones <- ggplot(low_abundances) +
+  geom_vline(xintercept=201.36, linetype='longdash', size=1) +
+  #geom_line(aes(x=mid_ma, y=percent_singletons*100, colour=realm), linetype='dashed') +
+  geom_point(aes(x=mid_ma, y=percent_singletons*100, fill=realm), shape=21, size=4) +
+  scale_color_manual(values=c('skyblue4', 'olivedrab')) +
+  scale_fill_manual(values=c('skyblue4', 'olivedrab')) +
+  scale_y_continuous(limits=c(0, 100)) +
+  ylab('% singleton genera') +
+  xlab('Age (Mya)') +
+  scale_x_reverse() +
+  coord_geo(xlim=c(237, 171), pos=NA, dat='stages') +
+  theme_bw() +
+  theme(
+        axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank())
+
+fives <- ggplot(low_abundances) +
+  geom_vline(xintercept=201.36, linetype='longdash', size=1) +
+  #geom_line(aes(x=mid_ma, y=percent_5*100, colour=realm), linetype='dashed') +
+  geom_point(aes(x=mid_ma, y=percent_5*100, fill=realm), shape=21, size=4) +
+  scale_color_manual(values=c('skyblue4', 'olivedrab')) +
+  scale_fill_manual(values=c('skyblue4', 'olivedrab')) +
+  scale_y_continuous(limits=c(0, 105)) +
+  ylab('% genera w/ 5 or fewer occurrences') +
+  xlab('Age (Mya)') +
+  scale_x_reverse() +
+  coord_geo(xlim=c(237, 171), pos='bottom', dat='stages', size='auto') +
+  theme_bw() +
+  theme(legend.position='none')
+
+low_abundance_fig <- ggarrange(ones, fives, ncol=1)
+
