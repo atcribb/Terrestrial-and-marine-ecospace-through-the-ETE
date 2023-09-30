@@ -151,7 +151,7 @@ marine_low_abundances$percent_5  <-         c(p_low_Carnian,
                                        p_low_Toarcian,
                                        p_low_Aalenian)
 marine_low_abundances
-save(marine_low_abundances, file='marine_abundances.RData')
+save(marine_low_abundances, file='Output/marine_abundances.RData')
 
 
 
