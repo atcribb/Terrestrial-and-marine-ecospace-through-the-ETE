@@ -1,93 +1,189 @@
 #Summary: Distribution of number of genera in each functional group, per stage
 #Author: Alison Cribb
 
-#=== packages and functions ===#
+#==== packages ====#
 library(divDyn)
 data(stages)
-library(tidyr)
 
-#also load TJ_functions.R script for functions
+TJ_stages <- stages$stage[56:63]
+TJ_stages
+Jurassic_stages <- stages$stage[59:63]
+Jurassic_stages
 
-#=== data unput ===#
-load('Datasets/TJ_marine_fulldata_final.RData')
-TJ_data <- final_marine_rawdat
+#==== data input ====#
+load('Datasets/FINAL_DATASETS/TJ_marine_fulldata_final.RData')
 jurassic_data <- subset(final_marine_rawdat, stage %in% Jurassic_stages)
 Rhaetian_data <- subset(final_marine_rawdat, stage=='Rhaetian')
 
-#=== data set up ===#
-FG_list <- sort(unique(final_marine_rawdat$FG_Number))
-FG_list
+#=== initial set up ===#
+#functional groups
+fg_numbers <- unique(sort(final_marine_rawdat$FG_Number))
 
-#create output_df by rbinding new dataframes for each stage
-    #final output_df columns: stage, functional group, occs, rich
+#Rhaetian genera list
+Rhaetian_genera <- unique(sort(Rhaetian_data$genus))
 
-output_df <- as.data.frame(matrix(data=NA, nrow=1, ncol=4))
-colnames(output_df) <- c('stage', 'fg_number', 'occs', 'richness')
-output_df
+#stage and data list for calculating n new genera in each stage
+prop_data <- subset(final_marine_rawdat, stage %in% stages$stage[58:63])
+prop_stages <- stages$stage[58:63]
 
-#iterations and collections quota for subsampling
-coll.quota=400
-iter=1000
+#dataframe assembly for ggplot
+variables <- c('stage', 'prop_Rhaetian', 'prop_nonRhaetian', 'prop_new', 'n')
+results_df <- as.data.frame(matrix(NA, nrow=length(Jurassic_stages), ncol=length(variables)))
+colnames(results_df) <- variables
+results_df$stage <- Jurassic_stages
 
-for(i in 1:length(TJ_stages)){
+#subsampling parameteres 
+n.colls <- 400
+iter <- 1000
+
+#=== analysis ===#
+for(i in 1:nrow(results_df)){
   
-  #subset data for this stage 
-  this.stage <- TJ_stages[i]
-  this.stage.data <- subset(final_marine_rawdat, final_marine_rawdat$stage==this.stage)
-  
-  #create temp dataframe
-  this.output_df <- as.data.frame(matrix(data=NA, nrow=length(FG_list), ncol=4))
-  colnames(this.output_df) <- colnames(output_df)
-  this.output_df$stage <- this.stage
-  
-  #collections data for subsampling
-  these.n.colls <- length(unique(this.stage.data$collection_no))
+  this.stage <- results_df$stage[i]
+  this.stage.data <- subset(jurassic_data, stage==this.stage)
   these.colls <- unique(this.stage.data$collection_no)
   
+  this.prior.data <- subset(jurassic_data, stage %in% prop_stages[1:i]) #all of the data in the stages leading up to this.stage
+  this.prior.genera <- sort(unique(this.prior.data$genus))
   
-  for(k in 1:length(FG_list)){
+  n_temp <- rep(NA, iter)
+  prop_Rhaetian_temp <- rep(NA, iter)
+  prop_nonRhaetian_temp <- rep(NA, iter)
+  prop_new_temp <- rep(NA, iter)
+  
+  for(k in 1:iter){
     
-    this.fg_number <- FG_list[k]
-    this.stage.fg.data <- subset(this.stage.data, this.stage.data$FG_Number==this.fg_number)
+    these.subbed.colls <- sample(these.colls, n.colls, replace=TRUE)
+    subbed.data <- subset(this.stage.data, collection_no %in% these.subbed.colls)
+    these.subbed.genera <- unique(subbed.data$genus)
     
-      #blank vectors to save and average at the end
-      rich.n <- rep(NA, iter)
-      occs.n <- rep(NA, iter)
-      
-      #subsampling
-      for(j in 1:iter){
-        
-          these.subbed.colls <- sample(these.colls, coll.quota, replace=TRUE)
-          subbed.data <- subset(this.stage.fg.data, this.stage.fg.data$collection_no %in% these.subbed.colls)
-          
-          #number of genera
-          this.occs <- length(subbed.data$genus)
-          occs.n[j] <- this.occs
-        
-          #generic richness
-          this.rich <- length(unique(subbed.data$genus))
-          rich.n[j] <- this.rich
-        
-      }
-      
-      #take averages of rich.n and occs.n
-      avg.occs <- mean(occs.n)
-      avg.rich <- mean(rich.n)
-      
-      #save in this.output_df
-      this.output_df$fg_number[k] <- this.fg_number
-      this.output_df$occs[k] <- avg.occs
-      this.output_df$richness[k] <- avg.rich
-      
+    n_temp[k] <- length(these.subbed.genera) #total number of genera 
+    
+    n_Rhaetian <- nrow(subset(subbed.data, genus %in% Rhaetian_genera))
+    prop_Rhaetian_temp[k] <- n_Rhaetian/length(these.subbed.genera) #proportion of genera that are from the Rhaetian
+    
+    n_nonRhaetian <- nrow(subset(subbed.data, !(genus %in% Rhaetian_genera))) 
+    prop_nonRhaetian_temp[k] <- n_nonRhaetian/length(these.subbed.genera) #proportion of genera that are not from the Rhaetian
+    
+    n_new <- nrow(subset(subbed.data, !(genus %in% this.prior.genera))) 
+    prop_new_temp[k] <- n_new/length(these.subbed.genera) #proportion of genera that are not found from any of the prevous stages
+    
   }
   
-  #rbind output dataframes together
-  output_df <- rbind(output_df, this.output_df)
+  results_df$prop_Rhaetian[i] <- mean(prop_Rhaetian_temp)
+  results_df$prop_nonRhaetian[i] <- mean(prop_nonRhaetian_temp)
+  results_df$prop_new[i] <- mean(prop_new_temp)
+  results_df$n[i] <- mean(n_temp)
+  
+  
+}
+
+results_df
+
+#========== analysis for functional groups ==========#
+#final output: heatmap, y=fg_number, x=stage, fill=proportion of new genera 
+variables <- c('stage', 'fg_number', 'n_tot', 'genrich', 'n_Rhaetian', 'n_nonRhaetian', 'n_new')
+output_df <- as.data.frame(matrix(NA, nrow=1, ncol=length(variables)))
+colnames(output_df) <- variables
+output_df
+
+#functional groups
+fg_numbers <- unique(sort(final_marine_rawdat$FG_Number))
+
+#Rhaetian genera list
+Rhaetian_genera <- unique(sort(Rhaetian_data$genus))
+
+#stage and data list for calculating n new genera in each stage
+prop_data <- subset(final_marine_rawdat, stage %in% stages$stage[58:63])
+prop_stages <- stages$stage[58:63]
+
+#subsampling parameters
+n.colls <- 400
+iter<- 1000
+
+for(i in 1:length(Jurassic_stages)){
+  
+  #get data for this stage 
+  this.stage <- Jurassic_stages[i]
+  this.stage.data <- subset(final_marine_rawdat, final_marine_rawdat$stage==this.stage) 
+  
+  #get data for all preceding stages
+  this.prior.data <- subset(final_marine_rawdat, stage %in% prop_stages[1:i]) #all of the data in the stages leading up to this.stage
+  this.prior.genera <- sort(unique(this.prior.data$genus))
+  
+  #create dataframe for output per stage
+  this.stage.output_df <- as.data.frame(matrix(data=NA, nrow=length(fg_numbers), ncol=ncol(output_df)))
+  colnames(this.stage.output_df) <- colnames(output_df)
+  this.stage.output_df$stage <- this.stage
+  this.stage.output_df$fg_number <- fg_numbers
+  
+  these.colls <- unique(this.stage.data$collection_no) #population of collections per stage for subsampling
+  
+  for(j in 1:iter){ 
+    
+    these.subbed.colls <- sample(these.colls, n.colls, replace=TRUE)
+    subbed.data <- subset(this.stage.data, collection_no %in% these.subbed.colls) #get subsampled data
+    
+    #from subsampled data, get data on taxa within functional groups
+    #set up output dataframes 
+    genrich_temp <- as.data.frame(matrix(NA, nrow=length(fg_numbers), ncol=iter)) #total genera
+    rownames(genrich_temp) <- fg_numbers
+    
+    n_temp <- as.data.frame(matrix(NA, nrow=length(fg_numbers), ncol=iter)) #total genera
+    rownames(n_temp) <- fg_numbers
+    
+    Rhaetian_temp <- as.data.frame(matrix(NA, nrow=length(fg_numbers), ncol=iter)) #genera from the Rhaetian
+    rownames(Rhaetian_temp) <- fg_numbers
+    
+    nonRhaetian_temp <- as.data.frame(matrix(NA, nrow=length(fg_numbers), ncol=iter)) #genera not from the Rhaetian
+    rownames(nonRhaetian_temp) <- fg_numbers
+
+    new_temp <- as.data.frame(matrix(NA, nrow=length(fg_numbers), ncol=iter)) #genera that are not present in any prior stage
+    rownames(new_temp) <- fg_numbers
+    
+    for(k in 1:length(fg_numbers)){
+      
+      this.fg <- fg_numbers[k]
+      subbed.this.fg.data <- subset(subbed.data, FG_Number==this.fg)
+      
+      #sample size
+      n_temp[k,i] <- length(subbed.this.fg.data$genus)
+      
+      #total number of unique genera
+      subbed.this.fg.genera <- unique(subbed.this.fg.data$genus)
+      genrich <- length(subbed.this.fg.genera)
+      genrich_temp[k, iter] <- genrich
+      
+      #number of Rhaetian genera
+      this.Rhaetian_data <- subset(subbed.this.fg.data, genus %in% Rhaetian_genera)
+      Rhaetian_temp[k, iter] <- length(unique(this.Rhaetian_data$genus))
+      
+      #number of non-Rhaetian genera
+      this.nonRhaetian_data <- subset(subbed.this.fg.data, !(genus %in% Rhaetian_genera))
+      nonRhaetian_temp[k, iter] <- length(unique(this.nonRhaetian_data$genus))
+      
+      #number of new genera not appearing in any prior 
+      this.new_data <- subset(subbed.this.fg.data, !(genus %in% this.prior.genera))
+      new_temp[k, iter] <- length(unique(this.new_data$genus))
+      
+    }
+    
+    #save rowMeans in this.output_df
+    this.stage.output_df$n_tot <- rowMeans(n_temp, na.rm=TRUE)
+    this.stage.output_df$genrich <- rowMeans(genrich_temp, na.rm=TRUE)
+    this.stage.output_df$n_Rhaetian <- rowMeans(Rhaetian_temp, na.rm=TRUE)
+    this.stage.output_df$n_nonRhaetian <- rowMeans(nonRhaetian_temp, na.rm=TRUE)
+    this.stage.output_df$n_new <- rowMeans(new_temp, na.rm=TRUE)
+    
+  }
+    
+  output_df <- rbind(output_df, this.stage.output_df)
   
   print(paste('FINISHED:', this.stage))
   
 }
 
-#==== save data ====#
+
+#=== save ===#
 marine_output_df <- output_df
-save(output_df, 'Output/marine_survivorsnewbies.RData')
+save(marine_output_df, file='Output/marine_survivorsvsnewbies.RData')
